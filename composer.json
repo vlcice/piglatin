@@ -7,7 +7,7 @@
     "english"
   ],
   "homepage": "https://github.com/vlcice/piglatin",
-  "type": "package"
+  "type": "package",
   "license": "proprietary",
   "authors": [
     {
