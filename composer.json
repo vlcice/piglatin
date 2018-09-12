@@ -29,7 +29,7 @@
   "minimum-stability": "stable",
   "autoload": {
     "psr-4": {
-      "Vlcice\\PigLatin\\": "src"
+      "Vlcice\\PigLatin\\": "src/"
     }
   },
   "require": {
