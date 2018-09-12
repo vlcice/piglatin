@@ -40,8 +40,5 @@
     "phpstan": "phpstan analyse -c phpstan.neon -l 2 src"
   },
   "require": {
-    "twig/twig": "^2.5",
-    "symfony/var-dumper": "^4.1",
-    "components/bootstrap": "^4.1"
   }
 }
