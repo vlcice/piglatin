@@ -7,7 +7,7 @@
     "english"
   ],
   "homepage": "https://github.com/vlcice/piglatin",
-  "type": "library",
+  "type": "package"
   "license": "proprietary",
   "authors": [
     {
@@ -16,7 +16,7 @@
     }
   ],
   "repositories": {
-    "oxyshop": {
+    "vlcice": {
       "type": "composer",
       "url": "https://packagist.org"
     }
@@ -34,5 +34,10 @@
   },
   "require": {
     "php": ">=7.0.0"
+  },
+  "extra": {
+    "installer-paths": {
+      "vendor/": ["vlcice/piglatin"]
+    }
   }
 }
