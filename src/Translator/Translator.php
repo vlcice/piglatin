@@ -19,6 +19,16 @@ class Translator
     const SUFFIX_SYLLABLE = 'ay';
 
     /**
+     * Delimiter for strings initiated with consonants.
+     */
+    const C_DELIMITER = '-';
+
+    /**
+     * Delimiter for strings initiated with vowels.
+     */
+    const V_DELIMITER = '\'';
+
+    /**
      * @var array
      */
     private $silent_consonants = [
@@ -30,6 +40,12 @@ class Translator
      * @var string
      */
     private $input = '';
+
+    /**
+     * Translated string.
+     * @var string
+     */
+    private $translation = '';
 
     /**
      * Output string.
@@ -70,17 +86,43 @@ class Translator
         return $letter === self::SEMIVOWEL;
     }
 
-    public function translate() : string
+    /**
+     * Translates string and returns translation.
+     * @param string $input
+     * @return string
+     */
+    public function translate(string $input) : string
     {
         $matches = [];
+        $first = '';
+
+        $this->setInput($input);
 
         if ($this->isValid()) {
-            $initialLetter = $this->input[0];   //faster than strpos
+            $initialLetter = $this->input[0];
 
-            preg_match('/(^['.self::CONSONANTS.']*)(.*)$/', $this->input, $matches, PREG_OFFSET_CAPTURE);
+            if ($this->isConsonant($initialLetter)) {
+
+                $pattern = '/^([' . self::CONSONANTS . ']*)([^' . self::CONSONANTS . '].)(.*)$/';
+                preg_match($pattern, $this->input, $matches);
+
+                $first = $matches[2] . $matches[3];
+                $second = self::C_DELIMITER;
+                $middle = $matches[1];
+            } else {
+                $pattern = '/^([' . self::VOWELS . ']*)([^' . self::VOWELS . '].)(.*)$/';
+
+                preg_match($pattern, $this->input, $matches);
+
+                $first = $matches[0];
+                $second = self::V_DELIMITER;
+                $middle = self::CONSONANTS[rand (0, strlen(self::CONSONANTS)-1)];   //extra consonant
+            }
+
+            $this->translation = $first.$second.$middle.self::SUFFIX_SYLLABLE;
         }
 
-        return json_encode($matches);
+        return $this->translation;
     }
 
     /**
@@ -89,25 +131,53 @@ class Translator
      */
     public function isValid() : bool
     {
-        $this->errorMessage = '';
-
         if ($this->input === '') {
             $this->errorMessage = "Empty string";
-        } elseif(!preg_match("/[a-z -\.]/i", $this->input)) {
-            $this->errorMessage = "The input contains a non-alphabet character.";
+        } elseif(preg_match("/[^\w]/i", $this->input)) {
+            $this->errorMessage = "The input contains a non-alphabet character! Please check input.";
         }
 
-        return ($this->errorMessage !== '');
+        return ($this->errorMessage === '');
     }
 
     /**
      * Input setter.
-     * @param $input
+     * @param string $input
      * @return Translator
      */
-    public function setInput($input) : self
+    public function setInput(string $input) : self
     {
         $this->input = $input;
+
+        return $this;
+    }
+
+    /**
+     * Input getter.
+     * @return string
+     */
+    public function getInput() : string
+    {
+        return $this->input;
+    }
+
+    /**
+     * Translated string getter.
+     * @return string
+     */
+    public function getTranslation() : string
+    {
+        return $this->translation;
+    }
+
+    /**
+     * Error message setter.
+     * @param string $errorMessage
+     * @return Translator
+     */
+    public function setErrorMessage(string $errorMessage) : self
+    {
+        $this->errorMessage = $errorMessage;
 
         return $this;
     }
