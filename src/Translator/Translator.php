@@ -94,32 +94,43 @@ class Translator
     public function translate(string $input) : string
     {
         $matches = [];
+        $words = [];
+        $translatedWords = [];
         $first = '';
 
         $this->setInput($input);
 
         if ($this->isValid()) {
-            $initialLetter = $this->input[0];
 
-            if ($this->isConsonant($initialLetter)) {
+            //TODO: parse input to words, process every word separately
+            $words = explode(' ', $this->input);
 
-                $pattern = '/^([' . self::CONSONANTS . ']*)([^' . self::CONSONANTS . '].)(.*)$/';
-                preg_match($pattern, $this->input, $matches);
+            foreach ($words as $word) {
 
-                $first = $matches[2] . $matches[3];
-                $second = self::C_DELIMITER;
-                $middle = $matches[1];
-            } else {
-                $pattern = '/^([' . self::VOWELS . ']*)([^' . self::VOWELS . '].)(.*)$/';
+                $initialLetter = $word[0];
 
-                preg_match($pattern, $this->input, $matches);
+                if ($this->isConsonant($initialLetter)) {
 
-                $first = $matches[0];
-                $second = self::V_DELIMITER;
-                $middle = self::CONSONANTS[rand (0, strlen(self::CONSONANTS)-1)];   //extra consonant
+                    $pattern = '/^([' . self::CONSONANTS . ']*)([^' . self::CONSONANTS . '].)(.*)$/';
+                    preg_match($pattern, $word, $matches);
+
+                    $first = $matches[2] . $matches[3];
+                    $second = self::C_DELIMITER;
+                    $middle = $matches[1];
+                } else {
+                    $pattern = '/^([' . self::VOWELS . ']*)([^' . self::VOWELS . '].)(.*)$/';
+
+                    preg_match($pattern, $word, $matches);
+
+                    $first = $matches[0];
+                    $second = self::V_DELIMITER;
+                    $middle = self::CONSONANTS[rand(0, strlen(self::CONSONANTS) - 1)];   //extra consonant
+                }
+
+                $translatedWords[] = $first . $second . $middle . self::SUFFIX_SYLLABLE;
             }
 
-            $this->translation = $first.$second.$middle.self::SUFFIX_SYLLABLE;
+            $this->translation = implode(' ', $translatedWords);
         }
 
         return $this->translation;
@@ -133,7 +144,7 @@ class Translator
     {
         if ($this->input === '') {
             $this->errorMessage = "Empty string";
-        } elseif(preg_match("/[^\w]/i", $this->input)) {
+        } elseif(preg_match("/[^\w ]+/i", $this->input)) {
             $this->errorMessage = "The input contains a non-alphabet character! Please check input.";
         }
 
