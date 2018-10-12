@@ -94,21 +94,13 @@ class Translator
     public function translate(string $input) : string
     {
         $matches = [];
-        $words = [];
         $translatedWords = [];
-        $first = '';
 
         $this->setInput($input);
 
         if ($this->isValid()) {
-
-            //TODO: parse input to words, process every word separately
-            $words = explode(' ', $this->input);
-
-            foreach ($words as $word) {
-
+            foreach (explode(' ', $this->input) as $word) {
                 $initialLetter = $word[0];
-
                 if ($this->isConsonant($initialLetter)) {
 
                     $pattern = '/^([' . self::CONSONANTS . ']*)([^' . self::CONSONANTS . '].)(.*)$/';
@@ -119,14 +111,12 @@ class Translator
                     $middle = $matches[1];
                 } else {
                     $pattern = '/^([' . self::VOWELS . ']*)([^' . self::VOWELS . '].)(.*)$/';
-
                     preg_match($pattern, $word, $matches);
 
                     $first = $matches[0];
                     $second = self::V_DELIMITER;
                     $middle = self::CONSONANTS[rand(0, strlen(self::CONSONANTS) - 1)];   //extra consonant
                 }
-
                 $translatedWords[] = $first . $second . $middle . self::SUFFIX_SYLLABLE;
             }
 
